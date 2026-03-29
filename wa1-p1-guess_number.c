@@ -48,12 +48,12 @@ int main() {
 
         // [TODO 1] 사용자로부터 정수를 입력받아 guess에 저장하세요.
         //          힌트: scanf("%d", ...)
-
-
+        scanf("%d", &guess) ;
+        
         if (guess == secret) {
             printf("정답! %d번 만에 맞췄습니다!\n", tries);
             return 0;
-        } else if (/* [TODO 2] guess가 secret보다 작은 조건을 작성하세요 */ 0) {
+        } else if (guess< secret) (/* [TODO 2] guess가 secret보다 작은 조건을 작성하세요 */ 0) {
             printf("더 큰 숫자를 입력하세요.\n");
         } else {
             printf("더 작은 숫자를 입력하세요.\n");
@@ -63,7 +63,7 @@ int main() {
     // [TODO 3] 기회를 모두 사용한 경우 아래 형식으로 출력하세요.
     //          출력 예시: "기회를 모두 사용했습니다. 정답은 42였습니다."
     //          힌트: secret 변수를 사용하세요.
-
+printf("기회를 모두 사용했습니다. 정답은 %d 였습니다.\n",secret);
 
     return 0;
 }
