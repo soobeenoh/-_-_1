@@ -65,7 +65,7 @@ int main() {
 
         // [TODO 1] 내부 while: 몬스터 HP와 플레이어 HP가 모두 0보다 클 때 반복합니다.
         //          힌트: while (조건1 && 조건2) 형태로 작성합니다.
-        while (                                    ) {
+        while ( monster_hp >0 && player_hp >0 ) {
 
             printf("\n[내 HP: %d] [몬스터 HP: %d]\n", player_hp, monster_hp);
             printf("1.공격  2.방어: ");
@@ -77,6 +77,7 @@ int main() {
             if (choice == 1) {  // 공격
                 // [TODO 2] 플레이어가 monster_dmg만큼 몬스터에게 피해를 줍니다.
                 //          힌트: monster_hp에서 player_dmg를 빼세요.
+                monster_hp -= player_dmg ;
 
                 if (monster_hp < 0) monster_hp = 0;
                 printf("내가 %d 데미지! 몬스터 HP: %d\n", player_dmg, monster_hp);
@@ -98,6 +99,7 @@ int main() {
                 }
                 // [TODO 3] 몬스터가 monster_dmg만큼 플레이어에게 피해를 줍니다.
                 //          힌트: player_hp에서 monster_dmg를 빼세요.
+                player_hp -= monster_dmg ;
 
                 if (player_hp < 0) player_hp = 0;
                 printf("몬스터가 %d 데미지! 내 HP: %d\n", monster_dmg, player_hp);
@@ -106,7 +108,9 @@ int main() {
             // [TODO 4] 플레이어 HP가 0 이하이면 "게임 오버" 메시지를 출력하고 종료하세요.
             //          출력 예시: "*** 게임 오버! 2번째 몬스터에게 쓰러졌습니다... ***"
             //          힌트: i 변수로 몇 번째 몬스터인지 나타낼 수 있습니다.
-
+           if (player_hp <= 0)
+              printf(" *** 게임 오버! %d번째 몬스터에게 쓰러졌습니다... ***",i);
+              break;
 
         }
 
@@ -118,3 +122,4 @@ int main() {
 
     return 0;
 }
+
