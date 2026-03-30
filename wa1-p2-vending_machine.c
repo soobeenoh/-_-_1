@@ -17,7 +17,8 @@ int main() {
 
         // [TODO 1] insert 금액을 balance에 더하세요.
         //          힌트: balance = balance + insert; 와 같은 의미입니다.
-
+        balance += insert ;
+        
 
         printf("메뉴를 선택하세요: ");
         scanf("%d", &choice);
@@ -26,10 +27,10 @@ int main() {
             case 1:  // 콜라 (1000원)
                 // [TODO 2] balance가 1000 이상이면 콜라를 구매합니다.
                 //          아래 if 조건식을 완성하세요.
-                if (              ) {
+                if ( balance >= 1000 ) {
                     balance -= 1000;
                     printf("콜라가 나왔습니다. 잔액: %d원\n\n", balance);
-                } else {
+                } else { 
                     printf("잔액 부족! %d원이 더 필요합니다.\n\n", 1000 - balance);
                 }
                 break;
@@ -37,8 +38,7 @@ int main() {
             case 2:  // 사이다 (1200원)
                 if (balance >= 1200) {
                     // [TODO 3] balance에서 사이다 가격(1200원)을 차감하세요.
-
-
+                    balance -= 1200 ;
                     printf("사이다가 나왔습니다. 잔액: %d원\n\n", balance);
                 } else {
                     printf("잔액 부족! %d원이 더 필요합니다.\n\n", 1200 - balance);
@@ -58,6 +58,7 @@ int main() {
                 // [TODO 4] 잔액을 안내하는 메시지를 출력하세요.
                 //          출력 예시: "잔액 500원을 반환합니다. 이용해 주셔서 감사합니다!"
                 //          힌트: balance 변수를 사용하세요.
+                printf("잔액 %d 원을 반환합니다. 이용해 주셔서 감사합니다!", balance);
 
 
                 return 0;
