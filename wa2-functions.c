@@ -37,8 +37,8 @@ int main() {
       printf("끝 단 입력: ");
       scanf("%d", &to);
       /* 힌트: gugudan_var 함수 호출 후 result에 저장 */
-      result = /* TODO */;
-      if (result != -1) {
+      result = gugudan_var(from, to, result);
+        if (result != -1) {
         printf("\n[결과] 총 %d개의 단을 출력했습니다.\n", result);
       }
       break;
@@ -48,7 +48,7 @@ int main() {
       printf("끝 단 입력: ");
       scanf("%d", &to);
       /* 힌트: gugudan_arr 함수 호출 후 result에 저장 */
-      result = /* TODO */;
+      result = gugudan_arr(from,to,result);
       if (result != -1) {
         printf("\n[결과] 총 %d개의 단을 출력했습니다.\n", result);
       }
@@ -57,10 +57,11 @@ int main() {
     /* ===== [TODO 2] case 3: alpha_counter 호출 + 결과 출력 ===== */
     case 3:
       /* 힌트: alpha_counter 함수 호출 후 result에 저장 */
-      result = /* TODO */;
+      result = alpha_counter(from,to,result);
       if (result != -1) {
         /* 힌트: "[결과] %d개의 알파벳이 사용되었습니다." 출력 */
         /* TODO */
+        printf("[결과] %d개의 알파벳이 사용되었습니다.") ;
       }
       break;
 
@@ -76,6 +77,8 @@ int main() {
          *       fib_val = fibonacci(i) 호출 후
          *       "F(%d) = %d" 형식으로 출력 */
         /* TODO */
+        for (int i = 0; i <= n; i++) {
+          int fib_val = fibonacci(i);
 
         printf("\n[결과] F(%d) = %d\n", n, fib_val);
       }
@@ -103,6 +106,10 @@ int gugudan_var(int from, int to) {
   /* 힌트: if (from > to) 이면 "[오류] 시작 단이 끝 단보다 클 수 없습니다." 출력
    * 후 return -1 */
   /* TODO */
+  if (from>to) {
+    printf("[오류] 시작 단이 끝 단보다 클 수 없습니다.") ;
+  }
+  return -1;
 
   count = to - from + 1;
 
@@ -112,7 +119,7 @@ int gugudan_var(int from, int to) {
   for (i = 1; i <= 9; i++) {
     for (dan = from; dan <= to; dan++) {
       /* 힌트: printf("%d x %d = %2d    ", dan, i, ???) 에서 ???를 채우세요 */
-      printf("%d x %d = %2d    ", dan, i, /* TODO */);
+      printf("%d x %d = %2d    ", dan, i, result[d]);
     }
     printf("\n");
   }
@@ -128,10 +135,14 @@ int gugudan_arr(int from, int to) {
   /* 힌트: if (from > to) 이면 "[오류] 시작 단이 끝 단보다 클 수 없습니다." 출력
    * 후 return -1 */
   /* TODO */
+  if (from>to) {
+    printf("[오류] 시작 단이 끝 단보다 클 수 없습니다.");
+  }
 
   count = to - from + 1;
   /* 힌트: 각 행의 결과를 저장할 int 배열을 count 크기로 선언하세요 */
   /* TODO */
+  int result[count];
 
   /* ===== [TODO 7] 이중 for문으로 배열에 저장 후 가로 출력 + 단 수 반환 =====
    */
@@ -139,10 +150,17 @@ int gugudan_arr(int from, int to) {
   for (int i = 1; i <= 9; i++) {
     /* 힌트 (저장): for문으로 d=0~count-1, result[d] = (from + d) * i */
     /* TODO */
+    for (int d = 0; d < count; d++) {
+    result[d] = (from + d) * i;
+    }
 
     /* 힌트 (출력): for문으로 d=0~count-1, printf("%d x %d = %2d    ", from+d,
      * i, result[d]) */
     /* TODO */
+    for (int d = 0; d < count; d++) {
+     printf("%d x %d = %2d    ", from+d,i,result[d]);
+    }
+  
 
     printf("\n");
   }
@@ -174,16 +192,25 @@ int alpha_counter() {
 
     /* 힌트: c가 대문자('A'~'Z')이면 소문자로 변환 → c = c + ('a' - 'A') */
     /* TODO */
+    if (c >= 'A' && c <= 'Z') {
+        c = c + ('a' - 'A');
+    }
 
     /* 힌트: c가 소문자('a'~'z')이면 문자별로 계수(count)하고,
      *       확인된 전체 알파벳 수를 갱신한다. (알파벳 아닌 문자는 무시) */
     /* TODO */
+    if (c >= 'a' && c <= 'z') {
+      alphabet_counts[c - 'a']++; 
+      total_alpha ++;
   }
 
   /* ===== [TODO 9] 가드 조건 + non-zero 수 계산 후 반환 ===== */
   /* 힌트: total_alpha가 0이면 "[오류] 알파벳이 하나도 없습니다." 출력 후 return
    * -1 */
   /* TODO */
+    if (total_alpha == 0) {
+      printf("[오류] 알파벳이 하나도 없습니다.")
+        return -1 ;
 
   printf("\n=== 알파벳 출현 횟수 ===\n");
   for (int i = 0; i < 26; i++) {
@@ -202,6 +229,9 @@ int fibonacci(int n) {
   /* 힌트: if (n < 0) 이면 "[오류] N은 0 이상이어야 합니다." 출력 후 return -1
    */
   /* TODO */
+  if (n < 0) {
+    printf("[오류] N은 0 이상이어야 합니다.\n");
+    return -1;
 
   /* ===== [TODO 11] base case + 재귀 호출 반환 ===== */
   /* 힌트:
@@ -210,6 +240,13 @@ int fibonacci(int n) {
    * - 그 외: return fibonacci(n-1) + fibonacci(n-2)
    */
   /* TODO */
+    if (n== 0) {
+      return 0;
+    }
+    if (n==-1) {
+      return 1;
+    }
+    return fibonacci(n-1) + fibonacci(n-2) ;
 
   return 0; /* ← 위 TODO를 완성하면 이 줄은 실행되지 않습니다 */
 }
