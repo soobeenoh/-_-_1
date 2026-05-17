@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* === 상수 ============================================================= */
 #define MAX_STRING_INPUT_LENGTH 500
@@ -127,10 +128,6 @@ int displayAndSelectMainMenu(void) {
  *
  * 정렬 함수는 모두 베이스 코드로 제공됨 — 호출만 하면 됨.
  */
- if(sel==1) {
-    int sortType = selectMenu();
-    displayTasksSorted(tasks, count, sortType);
- }
 
 
 void viewTasksMenu(Task tasks[], int count) {
@@ -158,8 +155,8 @@ void viewTasksMenu(Task tasks[], int count) {
             const int sortIdx[] = {0,1,2,3};
             const char *sortNames[]={"입력 순서", "ID", "우선순위", "상태"};
             int numOptions = sizeof(sortIdx) / sizeof(sortIdx[0]);
-            int sortType = selectMenu(sortIdx, sortNames, numOptions);
-            displayTasksSorted(tasks, count, (SortType)SortType);
+            int sortType = selectMenu("정렬 기준 선택", numOptions, sortIdx, sortNames);
+            displayTasksSorted(tasks, count, (SortType)sortType);
 
         } else if (sel == 2) {
             if (count == 0) {
