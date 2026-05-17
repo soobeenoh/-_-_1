@@ -127,6 +127,12 @@ int displayAndSelectMainMenu(void) {
  *
  * 정렬 함수는 모두 베이스 코드로 제공됨 — 호출만 하면 됨.
  */
+ if(sel==1) {
+    int sortType = selectMenu();
+    displayTasksSorted(tasks, count, sortType);
+ }
+
+
 void viewTasksMenu(Task tasks[], int count) {
     const int outerIndexes[] = {1, 2, 0};
     const char *outerNames[] = {"전체 작업 보기", "작업 검색 (ID)", "돌아가기"};
@@ -141,6 +147,7 @@ void viewTasksMenu(Task tasks[], int count) {
                 printf("[안내] 등록된 작업이 없습니다.\n");
                 continue;
             }
+
             /* === [TODO T5] 정렬 기준 선택 + 정렬된 출력 호출 ===
              * 힌트:
              *   const int sortIdx[] = {0, 1, 2, 3};
@@ -148,7 +155,12 @@ void viewTasksMenu(Task tasks[], int count) {
              *   int sortType = selectMenu(...);
              *   displayTasksSorted(tasks, count, (SortType)sortType);
              */
-            printf("[TODO T5] 정렬 보기 미구현\n");
+            const int sortIdx[] = {0,1,2,3};
+            const char *sortNames[]={"입력 순서", "ID", "우선순위", "상태"};
+            int numOptions = sizeof(sortIdx) / sizeof(sortIdx[0]);
+            int sortType = selectMenu(sortIdx, sortNames, numOptions);
+            displayTasksSorted(tasks, count, (SortType)SortType);
+
         } else if (sel == 2) {
             if (count == 0) {
                 printf("[안내] 등록된 작업이 없습니다.\n");
@@ -244,15 +256,32 @@ bool parseFirstIntValue(const char *input, int *out) {
  */
 const char *statusToString(TaskStatus s) {
     /* TODO T3: 구현 필요 */
-    (void)s;
-    return "알 수 없음";
+    switch (s) {
+        case TODO:
+            return "할 일";
+        case IN_PROGRESS:
+            return "진행 중";
+        case DONE:
+            return "완료";
+        default:
+            return "알 수 없음";
+    }
 }
 
 const char *priorityToString(TaskPriority p) {
     /* TODO T3: 구현 필요 */
-    (void)p;
-    return "알 수 없음";
+    switch (p) {
+        case LOW:
+            return "낮음";
+        case MEDIUM:
+            return "보통";
+        case HIGH:
+            return "높음";
+        default:
+            return "알 수 없음";
+    }
 }
+
 
 /*
  * === [TODO T2] 작업 출력 ===
@@ -263,10 +292,28 @@ const char *priorityToString(TaskPriority p) {
  */
 void displayTask(const Task *task, bool shortFormat) {
     /* TODO T2: 구현 필요 */
-    (void)task; (void)shortFormat;
-    printf("[TODO T2] displayTask 미구현\n");
-}
+    if (task == NULL) return;
 
+    if (shortFormat) {
+        printf("│ [작업 #%d] %s | %s | %s\n", 
+               task->id, 
+               task->title, 
+               statusToString(task->status), 
+               statusToString((TaskStatus)task->priority));
+    } 
+    else {
+        printf("┌──────────────────────────────────────────────────────────┐\n");
+        printf("│ [작업 정보] ID: %-4d                                     │\n", task->id);
+        printf("├──────────────────────────────────────────────────────────┤\n");
+        printf("│ 제목: %-50s │\n", task->title);
+        printf("│ 설명: %-50s │\n", task->description);
+        printf("│ 상태: %-10s  |  우선순위: %-10s                     │\n", 
+               statusToString(task->status), 
+               statusToString((TaskStatus)task->priority));
+        printf("└──────────────────────────────────────────────────────────┘\n");
+    }
+}
+    
 /* === CRUD ============================================================== */
 
 /*
@@ -280,9 +327,40 @@ void displayTask(const Task *task, bool shortFormat) {
  */
 void createTask(Task tasks[], int *count, int *nextId) {
     /* TODO T1: 구현 필요 */
-    (void)tasks; (void)count; (void)nextId;
-    printf("[TODO T1] createTask 미구현\n");
+    int idx = *count;
+    tasks[idx].id = *nextId;
+    tasks[idx].status = TODO;
+    tasks[idx].priority = MEDIUM; 
+    while (getchar() != '\n');
+    while (1) {
+        printf("작업 제목을 입력하세요: ");
+        scanf("%[^\n]", tasks[idx].title);
+        while (getchar() != '\n');
+        if (tasks[idx].title[0] == '\0') {
+            printf("[오류] 제목은 빈 문자열일 수 없습니다. 다시 입력해주세요.\n");
+        } else {
+            break; 
+        }
+    }
+    int inputPriority;
+    while (1) {
+        printf("우선순위를 입력하세요 (0:LOW, 1:MEDIUM, 2:HIGH): ");
+        if (scanf("%d", &inputPriority) == 1) {
+            if (inputPriority >= 0 && inputPriority <= 2) {
+                tasks[idx].priority = (TaskPriority)inputPriority;
+                break; 
+            }
+        }
+        while (getchar() != '\n');
+        printf("[오류] 우선순위는 0에서 2 사이의 숫자여야 합니다.\n");
+    }
+
+    (*count)++;
+    (*nextId)++;
+
+    printf("작업이 생성되었습니다. (ID: %d)\n", tasks[idx].id);
 }
+
 
 /*
  * === [TODO T4] ID로 작업 검색 ===
@@ -292,8 +370,11 @@ void createTask(Task tasks[], int *count, int *nextId) {
  * 핵심: 포인터를 반환해야 호출자가 원본을 수정할 수 있음 (`->` 연산자 사용)
  */
 Task *findTaskById(Task tasks[], int count, int id) {
-    /* TODO T4: 구현 필요 */
-    (void)tasks; (void)count; (void)id;
+    for (int i = 0; i < count; i++) {
+        if (tasks[i].id == id) {
+            return &tasks[i];
+        }
+    }
     return NULL;
 }
 
@@ -330,8 +411,91 @@ void updateTaskById(Task tasks[], int count) {
  */
 void updateTask(Task *task) {
     /* TODO T6: 구현 필요 */
-    (void)task;
-    printf("[TODO T6] updateTask 미구현\n");
+    if (task == NULL) return;
+
+    int isTitleChanged = 0;
+    int isDescChanged = 0;
+    int isStatusChanged = 0;
+    int isPriorityChanged = 0;
+
+    char oldTitle[100];     
+    char oldDesc[200];       
+    strcpy(oldTitle, task->title);
+    strcpy(oldDesc, task->description);
+    TaskStatus oldStatus = task->status;
+    TaskPriority oldPriority = task->priority;
+
+    char inputBuf[200]; 
+
+    while (getchar() != '\n');
+
+    printf("현재 제목: %s\n", task->title);
+    printf("변경할 제목 (엔터 입력 시 유지): ");
+    inputBuf[0] = '\0';
+    scanf("%[^\n]", inputBuf);
+    while (getchar() != '\n');
+    
+    if (inputBuf[0] != '\0') { 
+        strcpy(task->title, inputBuf);
+        isTitleChanged = 1;
+    }
+
+    printf("현재 설명: %s\n", task->description);
+    printf("변경할 설명 (엔터 입력 시 유지): ");
+    inputBuf[0] = '\0';
+    scanf("%[^\n]", inputBuf);
+    while (getchar() != '\n');
+
+    if (inputBuf[0] != '\0') {
+        strcpy(task->description, inputBuf);
+        isDescChanged = 1;
+    }
+    printf("현재 상태: %s\n", statusToString(task->status));
+    printf("변경할 상태 (0:TODO, 1:IN_PROGRESS, 2:DONE, 엔터 입력 시 유지): ");
+    inputBuf[0] = '\0';
+    scanf("%[^\n]", inputBuf);
+    while (getchar() != '\n');
+
+    if (inputBuf[0] != '\0') {
+        int newStatus = atoi(inputBuf); 
+        if (newStatus >= 0 && newStatus <= 2) {
+            task->status = (TaskStatus)newStatus;
+            if (oldStatus != task->status) isStatusChanged = 1;
+        }
+    }
+    printf("현재 우선순위: %s\n", statusToString((TaskStatus)task->priority));
+    printf("변경할 우선순위 (0:LOW, 1:MEDIUM, 2:HIGH, 엔터 입력 시 유지): ");
+    inputBuf[0] = '\0';
+    scanf("%[^\n]", inputBuf);
+    while (getchar() != '\n');
+
+    if (inputBuf[0] != '\0') {
+        int newPriority = atoi(inputBuf);
+        if (newPriority >= 0 && newPriority <= 2) {
+            task->priority = (TaskPriority)newPriority;
+            if (oldPriority != task->priority) isPriorityChanged = 1;
+        }
+    }
+
+    int totalChanged = isTitleChanged + isDescChanged + isStatusChanged + isPriorityChanged;
+
+    if (totalChanged == 0) {
+        printf("작업이 수정되지 않았습니다.\n");
+    } else {
+        printf("\n[ 수정 완료 요약 ]\n");
+        if (isTitleChanged) {
+            printf("- 제목:\n\t[이전] %s\n\t[변경] %s\n", oldTitle, task->title);
+        }
+        if (isDescChanged) {
+            printf("- 설명:\n\t[이전] %s\n\t[변경] %s\n", oldDesc, task->description);
+        }
+        if (isStatusChanged) {
+            printf("- 상태: [%s] -> [%s]\n", statusToString(oldStatus), statusToString(task->status));
+        }
+        if (isPriorityChanged) {
+            printf("- 우선순위: [%s] -> [%s]\n", statusToString((TaskStatus)oldPriority), statusToString((TaskStatus)task->priority));
+        }
+    }
 }
 
 /* === 정렬 — 베이스 코드 (수정 X) ====================================== */
